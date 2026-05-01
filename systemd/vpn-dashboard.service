@@ -1,0 +1,16 @@
+[Unit]
+Description=VPN Dashboard
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/vpn-dashboard
+Environment=PYTHONUNBUFFERED=1
+Environment=DASHBOARD_ADMIN_PASS=JURb8ZZcUBRBdArqM9c
+ExecStart=/usr/bin/python3 /root/vpn-dashboard/app.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
