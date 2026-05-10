@@ -74,10 +74,17 @@ obfs:
   salamander:
     password: $HYSTERIA_OBFS
 quic:
-  initStreamReceiveWindow: 8388608
-  maxStreamReceiveWindow: 8388608
-  initConnReceiveWindow: 25165824
-  maxConnReceiveWindow: 25165824
+  initStreamReceiveWindow: 4194304      # 4MB - reduced for stability
+  maxStreamReceiveWindow: 8388608       # 8MB
+  initConnReceiveWindow: 10485760       # 10MB - reduced from 24MB
+  maxConnReceiveWindow: 16777216        # 16MB - reduced from 24MB
+  maxIdleTimeout: 90s                   # was missing, added 90s
+  maxIncomingStreams: 1024
+  disablePathMTUDiscovery: false
+
+trafficStats:
+  listen: :9999
+
 masquerade:
   type: proxy
   proxy:
@@ -90,8 +97,11 @@ openssl req -x509 -nodes -days 365 -newkey ec -pkeyopt ec_paramgen_curve:prime25
     -subj "/CN=$SERVER_IP" 2>/dev/null
 chmod 600 /etc/hysteria2/certs/*
 
-# Install Hysteria 2 binary
-bash <> (curl -fsSL https://get.hy2.sh/)
+# Install Hysteria 2 binary v2.9.0 (pinned version)
+echo -e "${YELLOW}Downloading Hysteria v2.9.0...${NC}"
+curl -fsSL -o /usr/local/bin/hysteria "https://github.com/apernet/hysteria/releases/download/app/v2.9.0/hysteria-linux-amd64"
+chmod +x /usr/local/bin/hysteria
+hysteria version | head -1
 systemctl enable hysteria-server.service
 
 # Install x-ui (VLESS+Reality)
